@@ -73,8 +73,34 @@ The outputs confirm:
 - Both nodes have a default route through `192.168.100.1`.
 - Both nodes are configured to use DNS server `1.1.1.1`.
 
-Gateway reachability, Internet access, and DNS resolution
-still require connectivity tests.
+## Connectivity Test Results
+
+Tests are performed on 17 October 2026.
+
+| Source | Destination | Result |
+|---|---|---|
+| pve1 | pve2 — `192.168.100.12` | Passed: 0% packet loss |
+| pve2 | pve1 — `192.168.100.11` | Passed: 0% packet loss |
+| pve2 | Gateway — `192.168.100.1` | Failed: Destination Host Unreachable |
+| pve2 | DNS lookup for `debian.org` | No addresses returned |
+
+Local connectivity between the Proxmox nodes is verified.
+The configured default gateway is currently unreachable from
+pve2, and DNS resolution is unsuccessful.
+
+## Current Network Isolation
+
+The switch currently connects only the two Fujitsu nodes and 
+the adminstration laptop (if present). It has no Internet uplink.
+
+Connectivity between the nodes is verified. The configured
+gateway `192.168.100.1` is not currently provided by a device,
+so gateway reachability and DNS resolution are unsuccessful.
+
+Internet connectivity is planned through the Raspberry Pi,
+using Wi-Fi for the Internet connection and Ethernet for the
+lab network. The Pi will also provide remote access through
+Tailscale. This configuration is not yet operational.
 
 ## Remote Access — In Progress
 
@@ -84,7 +110,6 @@ configuration will be documented after configuration and testing.
 
 ## Remaining Tasks
 
-- Test connectivity between the Proxmox nodes.
-- Test reachability of the configured gateway.
-- Test Internet access and DNS resolution.
-- Complete and test Raspberry Pi remote access.
+- Configure the Raspberry Pi as the lab’s Internet gateway and verify gateway reachability.
+- Verify Internet access and DNS resolution from both Proxmox nodes.
+- Configure and test remote access through Tailscale on the Raspberry Pi.
