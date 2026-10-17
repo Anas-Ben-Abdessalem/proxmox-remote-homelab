@@ -32,13 +32,22 @@ faulty and awaiting replacement.
 - [x] Prepare the available Fujitsu hardware.
 - [x] Install Proxmox VE on two nodes.
 - [x] Access the Proxmox web interface.
-- [ ] Document hostnames and network configuration.
-- [ ] Document and verify the cluster configuration.
+- [x] Document hostnames and network configuration.
+- [x] Document and verify the cluster configuration.
+- [ ] Verify persistent time synchronization on both nodes.
 - [ ] Configure Raspberry Pi connectivity and SSH access.
+- [ ] Configure the Raspberry Pi Internet gateway and verify Internet access and DNS resolution.
 - [ ] Configure remote access through Tailscale.
 - [ ] Evaluate and configure a quorum device for the two-node setup.
-- [ ] Add the replacement Fujitsu node.
+- [ ] Add the replacement Fujitsu node and reassess quorum.
 - [ ] Complete and document practical lab exercises.
+
+
+## Available Guides
+
+1. [Proxmox installation and initial verification](docs/01-proxmox-installation.md)
+2. [Network topology and configuration](docs/02-network-topology.md)
+3. [Cluster creation and quorum verification](docs/03-cluster-and-quorum.md)
 
 ## Documentation Plan
 
