@@ -21,25 +21,33 @@ decisions, troubleshooting, and practical exercises.
 |---|---|---|
 | 3 × Fujitsu Futro S930 | AMD GX-424CC, 4 cores, 8 GB RAM, 64 GB SSD per node | Proxmox cluster nodes |
 | HP Pavilion laptop | Intel Core i7, 11th generation, 20 GB RAM | Administration and additional local VMs |
-| Raspberry Pi | 4 GB RAM, 128 GB microSD card | Remote access gateway; potential quorum device |
+| Raspberry Pi | 4 GB RAM, 128 GB microSD card | Internet gateway and Tailscale remote access |
 | Ethernet switch | Connects the wired lab devices | Lab network |
 
-Two Fujitsu nodes are currently operational. The third unit is
-faulty and awaiting replacement.
+All three Fujitsu nodes (`pve1`, `pve2`, and `pve3`) are now members
+of the cluster. The Raspberry Pi connects to eduroam over Wi-Fi and
+provides Internet access to the wired lab, plus remote access through
+Tailscale.
+
+Status updated on 1 November 2026 from the operator's confirmation.
+Configuration captures and reboot verification remain to be documented.
 
 ## Current Progress
 
 - [x] Prepare the available Fujitsu hardware.
-- [x] Install Proxmox VE on two nodes.
+- [x] Install Proxmox VE on all three nodes.
 - [x] Access the Proxmox web interface.
 - [x] Document hostnames and network configuration.
 - [x] Document and verify the cluster configuration.
-- [ ] Verify persistent time synchronization on both nodes.
-- [ ] Configure Raspberry Pi connectivity and SSH access.
-- [ ] Configure the Raspberry Pi Internet gateway and verify Internet access and DNS resolution.
-- [ ] Configure remote access through Tailscale.
-- [ ] Evaluate and configure a quorum device for the two-node setup.
-- [ ] Add the replacement Fujitsu node and reassess quorum.
+- [x] Connect the Raspberry Pi to eduroam.
+- [x] Use the Raspberry Pi as the lab's Internet gateway.
+- [x] Configure remote access through Tailscale on the Raspberry Pi.
+- [x] Add the third Fujitsu node to the cluster.
+- [ ] Capture current membership and quorum output from all three nodes.
+- [ ] Verify persistent time synchronization on all nodes.
+- [ ] Record current addresses, interfaces, DNS, forwarding, and NAT configuration.
+- [ ] Record the Tailscale access method and any configured subnet routes.
+- [ ] Verify DNS from each node and connectivity after a Raspberry Pi reboot.
 - [ ] Complete and document practical lab exercises.
 
 
@@ -48,6 +56,7 @@ faulty and awaiting replacement.
 1. [Proxmox installation and initial verification](docs/01-proxmox-installation.md)
 2. [Network topology and configuration](docs/02-network-topology.md)
 3. [Cluster creation and quorum verification](docs/03-cluster-and-quorum.md)
+4. [Raspberry Pi gateway and Tailscale remote access](docs/04-raspberry-pi-gateway-and-tailscale.md)
 
 ## Documentation Plan
 

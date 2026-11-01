@@ -1,81 +1,66 @@
 # Network Topology and Configuration
 
-## Purpose
+## Current Topology
 
-The lab network connects two Proxmox nodes and the administration
-laptop through an Ethernet switch.
+Status reported by the operator on 1 November 2026:
 
-The Raspberry Pi remote-access configuration is still in progress.
-
-## Physical Connections
+- All three Fujitsu nodes are members of the Proxmox cluster.
+- The Raspberry Pi connects to eduroam over Wi-Fi.
+- The Pi provides the wired lab with Internet access.
+- Tailscale on the Pi provides remote access to the lab.
 
 | Device | Connection | Role |
 |---|---|---|
-| Fujitsu pve1 | Ethernet to the switch | Proxmox node |
-| Fujitsu pve2 | Ethernet to the switch | Proxmox node |
-| HP Pavilion laptop | Ethernet to the switch | Administration |
-| Raspberry Pi | Not yet connected to the lab switch | Remote access setup in progress |
+| pve1 | Ethernet to the lab switch | Proxmox node |
+| pve2 | Ethernet to the lab switch | Proxmox node |
+| pve3 | Ethernet to the lab switch | Proxmox node |
+| Raspberry Pi | Ethernet to the lab switch; Wi-Fi to eduroam | Internet gateway and Tailscale remote access |
+| HP Pavilion laptop | Lab network when connected, or remote access | Administration |
 
-The third Fujitsu node is awaiting replacement.
+The Internet path is: Proxmox nodes → lab switch → Raspberry Pi →
+eduroam → Internet. The remote access entry point is Tailscale on the Pi.
+Whether access onward to the nodes uses subnet routing, SSH forwarding,
+or another method still needs to be captured from the working configuration.
 
-## Network Configuration
+See [Raspberry Pi gateway and Tailscale](04-raspberry-pi-gateway-and-tailscale.md)
+for the completed milestone and remaining configuration evidence.
+
+## Address and Interface Records
+
+The following values were recorded on 17 October 2026, before the Pi
+gateway and third node were operational. They are historical references,
+not a fresh capture of the current configuration.
 
 | Setting | pve1 | pve2 |
 |---|---|---|
 | IPv4 address | `192.168.100.11/24` | `192.168.100.12/24` |
 | Address assignment | Static | Static |
-| Network | `192.168.100.0/24` | `192.168.100.0/24` |
-| Subnet mask | `255.255.255.0` | `255.255.255.0` |
 | Default gateway | `192.168.100.1` | `192.168.100.1` |
 | Physical interface | `nic0` | `nic0` |
 | Linux bridge | `vmbr0` | `vmbr0` |
 | DNS server | `1.1.1.1` | `1.1.1.1` |
 | DNS search domain | `home.arpa` | `home.arpa` |
 
-## Bridge Configuration
+Later setup work introduced USB Ethernet adapters and DNS changes.
+Capture the current configuration on each node before treating the
+historical interface or DNS values as current. The address of pve3 and
+the Pi's current LAN address are not yet recorded in this document.
 
-The persistent network configuration is recorded in
-`/etc/network/interfaces`.
+## Bridge Configuration at the Initial Milestone
 
-On each node:
+The persistent network configuration was recorded in
+`/etc/network/interfaces`:
 
-- `nic0` is configured with `inet manual` and has no IPv4
-  address assigned in this file.
-- `nic0` is attached to `vmbr0` through `bridge-ports nic0`.
-- The static management address and default gateway are
-  configured on `vmbr0`.
-- `auto vmbr0` enables the bridge during network startup.
-- Spanning Tree Protocol is disabled with `bridge-stp off`.
-- The bridge forwarding delay is set to zero with `bridge-fd 0`.
+- The physical interface used `inet manual`.
+- `vmbr0` held the management address and default gateway.
+- `bridge-ports` attached the physical interface to `vmbr0`.
+- `auto vmbr0` enabled the bridge at startup.
+- `bridge-stp off` disabled Spanning Tree Protocol.
+- `bridge-fd 0` set the bridge forwarding delay to zero.
 
-The bridge acts as a virtual switch, allowing guest interfaces
-attached to it to communicate through the physical Ethernet port.
+The bridge connects guest network interfaces to the physical network.
 
-## Runtime Verification
-
-The following commands are executed on both nodes:
-
-```bash
-hostname
-ip -br -4 addr
-ip -4 route
-cat /etc/network/interfaces
-bridge link show
-cat /etc/resolv.conf
-```
-
-The outputs confirm:
-
-- Both nodes have unique static management addresses.
-- Both management bridges are UP.
-- Both physical interfaces report UP and LOWER_UP.
-- Each `nic0` belongs to `vmbr0` and is in forwarding state.
-- Both nodes have a default route through `192.168.100.1`.
-- Both nodes are configured to use DNS server `1.1.1.1`.
-
-## Connectivity Test Results
-
-Tests are performed on 17 October 2026.
+## Historical Connectivity Tests — 17 October 2026
 
 | Source | Destination | Result |
 |---|---|---|
@@ -84,32 +69,14 @@ Tests are performed on 17 October 2026.
 | pve2 | Gateway — `192.168.100.1` | Failed: Destination Host Unreachable |
 | pve2 | DNS lookup for `debian.org` | No addresses returned |
 
-Local connectivity between the Proxmox nodes is verified.
-The configured default gateway is currently unreachable from
-pve2, and DNS resolution is unsuccessful.
+These failures describe the earlier isolated network. The operator
+now confirms that the Pi supplies Internet access; the historical
+failures are not the current reported status.
 
-## Current Network Isolation
+## Remaining Documentation and Verification
 
-The switch currently connects only the two Fujitsu nodes and 
-the adminstration laptop (if present). It has no Internet uplink.
-
-Connectivity between the nodes is verified. The configured
-gateway `192.168.100.1` is not currently provided by a device,
-so gateway reachability and DNS resolution are unsuccessful.
-
-Internet connectivity is planned through the Raspberry Pi,
-using Wi-Fi for the Internet connection and Ethernet for the
-lab network. The Pi will also provide remote access through
-Tailscale. This configuration is not yet operational.
-
-## Remote Access — In Progress
-
-The Raspberry Pi is intended to provide remote access through
-Tailscale. Its final connections, IP addresses, and routing
-configuration will be documented after configuration and testing.
-
-## Remaining Tasks
-
-- Configure the Raspberry Pi as the lab’s Internet gateway and verify gateway reachability.
-- Verify Internet access and DNS resolution from both Proxmox nodes.
-- Configure and test remote access through Tailscale on the Raspberry Pi.
+- Capture addresses, routes, bridge ports, and DNS on all three nodes.
+- Capture the Pi's LAN and Wi-Fi addresses and routing configuration.
+- Record node-to-gateway, Internet, and DNS checks on each node.
+- Record remote access tests from outside the lab network.
+- Verify the configuration survives a Pi reboot.
