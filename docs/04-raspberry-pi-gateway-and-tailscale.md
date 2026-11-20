@@ -83,6 +83,49 @@ capture their active settings and persistent configuration. Do not
 publish eduroam credentials, private keys, Tailscale authentication
 keys, or other secrets.
 
+
+## Ubuntu Remote Access via Tailscale
+
+**Date:** 20 November 2026
+
+### Issue
+
+After migrating the administration laptop from Windows to Ubuntu, Tailscale connectivity was established, but the Proxmox subnet (`192.168.100.0/24`) was inaccessible.
+
+Running `tailscale status` revealed:
+
+```text
+Some peers are advertising routes but --accept-routes is false
+```
+
+### Resolution
+
+Enabled subnet route acceptance on Ubuntu:
+
+```bash
+sudo tailscale set --accept-routes=true
+```
+
+This allows Ubuntu to install subnet routes advertised by authorized Tailscale peers.
+
+### Verification
+
+The operator confirmed that the Proxmox subnet became accessible after enabling route acceptance.
+
+### Configuration
+
+| Component | Address |
+|---|---|
+| Ubuntu Tailscale | `100.103.151.108` |
+| Raspberry Pi Tailscale | `100.94.24.31` |
+| Proxmox subnet | `192.168.100.0/24` |
+
+These addresses reflect the observed configuration on 20 November 2026 and may change.
+
+**Result:** Remote access to the homelab subnet is functioning from Ubuntu without assigning the laptop an additional LAN IP address.
+
+
+
 ## Remaining Verification
 
 - Record Internet and DNS checks from all three nodes.
@@ -92,5 +135,3 @@ keys, or other secrets.
 - Verify node Internet access and Tailscale remote access recover after that reboot.
 - Add sanitized configuration excerpts and observed test results.
 
-Keep these checks in this guide; keep the overall project milestones
-in the README.
